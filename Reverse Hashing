@@ -1,0 +1,124 @@
+// icpc preli 2021 problem D
+
+ll add(ll a, ll b, ll mod)
+{
+    ll res=(a+b)%mod;
+    if(res<0) res+=mod;
+    return res;
+}
+
+ll mul(ll a, ll b, ll mod)
+{
+    ll res=(a*b)%mod;
+    if(res<0) res+=mod;
+    return res;
+}
+
+ll _power(ll a, ll b, ll mod)
+{
+    ll res=1;
+    while(b)
+    {
+        if(b%2==1) res=mul(res, a, mod);
+        a=mul(a, a, mod);
+        b=b/2;
+    }
+    return res;
+}
+
+#define mod 1e9+7
+#define mod2 1e9+9
+ll n;
+string s;
+ll base=253, base2=257;
+ll _pow[1000010];
+ll _pow2[1000010];
+ll hashed_fs[1000010], hashed_rs[1000010];
+ll hashed_fs2[1000010], hashed_rs2[1000010];
+
+void precal()
+{
+    _pow[0]=1;
+    for(ll i=1;i<=1000000;i++)
+    {
+        _pow[i]=mul(_pow[i-1], base, mod);
+    }
+
+    _pow2[0]=1;
+    for(ll i=1;i<=1000000;i++)
+    {
+        _pow2[i]=mul(_pow2[i-1], base2, mod2);
+    }
+}
+
+vector<ll>adj[1000010];
+ll vis[1000010];
+ll ans;
+
+void dfs(ll node, ll lev, ll par)
+{
+    if(vis[node]==1) return;
+
+    vis[node]=1;
+
+    if(par!=-1)
+    {
+        hashed_fs[node]=add(hashed_fs[par], mul(s[node]-'0' , _pow[lev], mod), mod);
+        hashed_fs2[node]=add(hashed_fs2[par], mul(s[node]-'0' , _pow2[lev], mod2), mod2);
+
+        hashed_rs[node]=add(mul(hashed_rs[par], base, mod), s[node]-'0' , mod);
+        hashed_rs2[node]=add(mul(hashed_rs2[par], base2, mod2), s[node]-'0' , mod2);
+    }
+
+if(hashed_fs[node]==hashed_rs[node] && hashed_fs2[node]==hashed_rs2[node]) ans++;
+
+    for(auto i:adj[node])
+    {
+        if(vis[i]==0) dfs(i, lev+1, node);
+    }
+}
+
+int main()
+{
+    fast;
+
+    precal();
+
+    ll T=0;
+
+    tc
+    {
+        cin>>n;
+        cin>>s;
+
+        for(ll i=0;i<n-1;i++)
+        {
+            ll u,v; cin>>u>>v;
+            u--, v--;
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+
+        ans=0;
+
+        hashed_fs[0]=mul(s[0]-'0' , _pow[0], mod);
+        hashed_rs[0]=mul(s[0]-'0' , _pow[0], mod);
+        hashed_fs2[0]=mul(s[0]-'0' , _pow2[0], mod2);
+        hashed_rs2[0]=mul(s[0]-'0' , _pow2[0], mod2);
+
+        dfs(0, 0, -1);
+
+        ll gc=__gcd(n, ans);
+        ll m=n;
+        ans/=gc;
+        n/=gc;
+        cout<<"Case "<<++T<<": ";
+        cout<<ans<<"/"<<n<<endl;
+
+        for(ll i=0;i<=m;i++)
+        {
+            vis[i]=0;
+            adj[i].clear();
+        }
+    }
+}
