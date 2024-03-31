@@ -1,1 +1,1 @@
-# String-Algorithms
+Most Common String Algorithms for CP
