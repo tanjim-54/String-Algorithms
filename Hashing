@@ -1,0 +1,97 @@
+ll add(ll a, ll b, ll mod)
+{
+    ll res=(a+b)%mod;
+    if(res<0) res+=mod;
+    return res;
+}
+ 
+ll mul(ll a, ll b, ll mod)
+{
+    ll res=(a*b)%mod;
+    if(res<0) res+=mod;
+    return res;
+}
+ 
+ll power(ll a, ll b, ll mod)
+{
+    ll res=1;
+    while(b)
+    {
+        if(b%2==1) res=mul(res, a, mod);
+        a=mul(a, a, mod);
+        b=b/2;
+    }
+    return res;
+}
+ 
+#define mod1 1e9+7
+#define mod2 1e9+9
+ 
+ll n, base1=121, base2=131;
+ll pow_1[1000005], invpow_1[1000005], hashed1[1000005];
+ll pow_2[1000005], invpow_2[1000005], hashed2[1000005];
+ 
+void precal()
+{
+    pow_1[0]=1;
+    for(ll i=1;i<=1000000;i++)
+    {
+        pow_1[i]=mul(pow_1[i-1], base1, mod1);
+    }
+ 
+    pow_2[0]=1;
+    for(ll i=1;i<=1000000;i++)
+    {
+        pow_2[i]=mul(pow_2[i-1], base2, mod2);
+    }
+ 
+    ll val1=power(base1, mod1-2, mod1);
+    invpow_1[0]=1;
+    for(ll i=1;i<=1000000;i++)
+    {
+        invpow_1[i]=mul(invpow_1[i-1], val1, mod1);
+    }
+ 
+    ll val2=power(base2, mod2-2, mod2);
+    invpow_2[0]=1;
+    for(ll i=1;i<=1000000;i++)
+    {
+        invpow_2[i]=mul(invpow_2[i-1], val2, mod2);
+    }
+}
+ 
+void calHash1(string s)
+{
+    hashed1[0]=mul(s[0]-'0', pow_1[0], mod1);
+    for(ll i=1; i<n; i++)
+    {
+        hashed1[i]=add(hashed1[i-1], mul(s[i]-'0', pow_1[i], mod1), mod1);
+    }
+}
+ 
+void calHash2(string s)
+{
+    hashed2[0]=mul(s[0]-'0', pow_2[0], mod2);
+    for(ll i=1; i<n; i++)
+    {
+        hashed2[i]=add(hashed2[i-1], mul(s[i]-'0', pow_2[i], mod2), mod2);
+    }
+}
+ 
+ll getHash1(ll i, ll j)
+{
+    if(i==0) return hashed1[j];
+ 
+    ll res=add(hashed1[j], -hashed1[i-1], mod1);
+    res=mul(res, invpow_1[i], mod1);
+    return res;
+}
+ 
+ll getHash2(ll i, ll j)
+{
+    if(i==0) return hashed2[j];
+ 
+    ll res=add(hashed2[j], -hashed2[i-1], mod2);
+    res=mul(res, invpow_2[i], mod2);
+    return res;
+}
