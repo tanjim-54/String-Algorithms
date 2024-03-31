@@ -1,0 +1,37 @@
+// For finding longest palndrome substring 
+
+ll man[N+N];
+
+ll manacher_algo(string s)
+{
+    memset(man , 0 , sizeof(man));
+    ll n = s.size();
+    s = "$" + s + "^";
+    ll l = 1, r = 1;
+    for(ll i = 1; i <= n; i++)
+    {
+        man[i] = max(0ll, min(r - i, man[l + (r - i)]));
+        while(s[i - man[i]] == s[i + man[i]])
+        {
+            man[i]++;
+        }
+        if(i + man[i] > r)
+        {
+            l = i - man[i], r = i + man[i];
+        }
+    }
+    ll mx = 0 ; //longest palindrome length
+    for(ll i =0 ; i< n ; i++) mx = max(mx,man[i]);
+    return mx-1;
+}
+
+ll manacher_create(string s)
+{
+    string t;
+    for(auto c: s)
+    {
+        t += string("#") + c;
+    }
+    t+="#";
+    return manacher_algo(t);
+}
