@@ -1,0 +1,52 @@
+ll lps[N+1];
+vector<ll>vct;
+void Lps_array_finding(string s)
+{
+    ll left=0,right=1;
+    ll n = s.size();
+    while(right<n)
+    {
+       if(s[left]==s[right])
+       {
+           lps[right]+=left+1;
+           ++left;
+           ++right;
+       }
+       else
+       {
+          if(left>0) left = lps[left-1];
+          else right++;
+       }
+    }
+
+}
+
+void KMP(string s , string pat)
+{
+    if(pat.size()>s.size()) return;
+    ll left=0 ,right = 0;
+    ll n = s.size();
+    ll x = pat.size();
+    while(right<n)
+    {
+        if(pat[left]==s[right])
+        {
+            ++left;
+            ++right;
+        }
+        else
+        {
+           if(left>=1) left=lps[left-1];
+           else right++;
+        }
+
+        if(left==x)
+        {
+            left=0;
+            vct.push_back(right-x+1);
+        }
+    }
+}
+
+String = a a b a a b a a a              
+Lps[]= 0 1 0 1 2 3 4 5 2
